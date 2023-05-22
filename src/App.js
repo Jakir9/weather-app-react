@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Title, WeatherWrapper, MainContainer } from './styles.js'
 import { Weather } from './weather.js'
+import axios from 'axios'
 
 function App() {
   const [longitude, setLongitude] = useState(0)
@@ -10,7 +11,6 @@ function App() {
 
   const units = 'metric' //can be changed to imperial if need be - maybe add functionality to toggle units
   const apiKey = process.env.REACT_APP_API_KEY
-  console.log(apiKey)
 
   const convertUnits = {
     metric: {
