@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Title, WeatherWrapper, MainContainer } from './styles.js'
 import { Weather } from './weather.js'
 import axios from 'axios'
+import dotenv from 'dotenv'
 
 function App() {
   const [longitude, setLongitude] = useState(0)
@@ -23,69 +24,82 @@ function App() {
     },
   }
 
-  const fetchWeather = () => {
-    if (!latitude && !longitude) {
-      return
-    } else {
-      let url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=${units}`
-      fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          const {
-            coord: { lon, lat },
-            main: { temp, feels_like },
-            wind: { speed, deg },
-            sys: { sunrise, sunset },
-            weather: [{ icon }],
-          } = data
-          setWeatherData({
-            lon,
-            lat,
-            temp,
-            feels_like,
-            speed,
-            deg,
-            sunrise,
-            sunset,
-            icon,
-          })
+  const fetchWeather = async () => {
+    let url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=${units}`
+
+    try {
+      const response = await axios.get(url)
+
+      if (response.status === 200) {
+        const data = response.data
+
+        const {
+          coord: { lon, lat },
+          main: { temp, feels_like },
+          wind: { speed, deg },
+          sys: { sunrise, sunset },
+          weather: [{ icon }],
+        } = data
+
+        setWeatherData({
+          lon,
+          lat,
+          temp,
+          feels_like,
+          speed,
+          deg,
+          sunrise,
+          sunset,
+          icon,
         })
-        .catch((error) => {
-          console.log(`error: `, error)
-        })
-        .finally(() => {
-          console.log(`fetched weather`)
-        })
+
+        console.log('Weather data fetched')
+      } else {
+        console.log('Error: Unexpected status code', response.status)
+      }
+    } catch (error) {
+      console.log('Error:', error)
     }
   }
-  // const updateCoordinates = (props) => {
-  //   const { coords } = props
-  //   const newLongitude = coords ? coords.longitude || 0 : 0
-  //   const newLatitude = coords ? coords.latitude || 0 : 0
-  //   setLongitude(newLongitude)
-  //   setLatitude(newLatitude)
-  //   console.log(`updated coordinates: ${newLongitude}, ${newLatitude}`)
-  //   fetchWeather()
-  // }
 
-  const updateCoordinates = (coords) => {
-    const newLongitude = coords ? coords.longitude || 0 : 0
-    const newLatitude = coords ? coords.latitude || 0 : 0
-    setLongitude(newLongitude)
-    setLatitude(newLatitude)
-    console.log(`updated coordinates: ${newLongitude}, ${newLatitude}`)
-    fetchWeather()
+  const getCurrentCoordinates = () => {
+    return new Promise((resolve, reject) => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords
+            setLatitude(latitude)
+            setLongitude(longitude)
+            resolve({ latitude, longitude })
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      } else {
+        reject(new Error('Geolocation is not supported by this browser.'))
+      }
+    })
+      .then((coordinates) => {
+        const { latitude, longitude } = coordinates
+        console.log('Latitude:', latitude)
+        console.log('Longitude:', longitude)
+        fetchWeather()
+      })
+      .catch((error) => {
+        console.log('Error:', error)
+        // Handle the error appropriately
+      })
   }
+
+  getCurrentCoordinates() //call this every time the page loads
 
   useEffect(() => {
-    updateCoordinates()
-    fetchWeather() // if any changes occur it gets weather again
+    getCurrentCoordinates()
+    // if any changes occur it gets weather again
   }, [longitude, latitude])
 
-  const getTime = (arg) => {
-    let time = new Date(arg * 1000)
-    return time.toLocaleTimeString('en-US')
-  }
+  console.log('Weather data:', weatherData)
 
   return (
     <MainContainer>
