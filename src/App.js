@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Title, WeatherWrapper, MainContainer } from './styles.js'
 import { Weather } from './weather.js'
 import axios from 'axios'
-import dotenv from 'dotenv'
+//import dotenv from 'dotenv'
 
 function App() {
   const [longitude, setLongitude] = useState(0)
@@ -11,7 +11,7 @@ function App() {
   const [weatherData, setWeatherData] = useState({})
 
   const units = 'metric' //can be changed to imperial if need be - maybe add functionality to toggle units
-  const apiKey = process.env.REACT_APP_API_KEY
+  const apiKey = 'null'
 
   const convertUnits = {
     metric: {
@@ -34,23 +34,30 @@ function App() {
         const data = response.data
 
         const {
-          coord: { lon, lat },
-          main: { temp, feels_like },
+          weather,
+          main: { temp, feels_like, temp_min, temp_max, pressure, humidity },
           wind: { speed, deg },
-          sys: { sunrise, sunset },
-          weather: [{ icon }],
+          sys: { country, sunrise, sunset },
+          name,
         } = data
 
+        const { description, icon } = weather[0]
+
         setWeatherData({
-          lon,
-          lat,
+          description,
           temp,
           feels_like,
           speed,
+          pressure,
+          humidity,
           deg,
+          icon,
+          temp_min,
+          temp_max,
+          country,
+          name,
           sunrise,
           sunset,
-          icon,
         })
 
         console.log('Weather data fetched')
@@ -104,16 +111,26 @@ function App() {
   return (
     <MainContainer>
       <Title>Weather App</Title>
-
       <WeatherWrapper>
         {/* Have weather here */}
         <Weather
-          sunset={weatherData.sunset}
-          sunrise={weatherData.sunrise}
-          weatherData={weatherData}
           longitude={longitude}
           latitude={latitude}
           units={convertUnits[units].temp}
+          speed={weatherData.speed}
+          deg={weatherData.deg}
+          temp={weatherData.temp}
+          feels_like={weatherData.feels_like}
+          temp_min={weatherData.temp_min}
+          temp_max={weatherData.temp_max}
+          country={weatherData.country}
+          name={weatherData.name}
+          icon={weatherData.icon}
+          humidity={weatherData.humidity}
+          pressure={weatherData.pressure}
+          description={weatherData.description}
+          sunrise={weatherData.sunrise}
+          sunset={weatherData.sunset}
         />
       </WeatherWrapper>
     </MainContainer>
