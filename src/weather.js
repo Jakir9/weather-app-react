@@ -1,26 +1,66 @@
 import React from 'react'
 
+const makeIconUrl = (iconId) =>
+  `https://openweathermap.org/img/wn/${iconId}@2x.png`
+
+const unixToTime = (unixTime) => {
+  const dateObject = new Date(unixTime * 1000)
+  var hours = dateObject.getHours()
+  var minutes = '0' + dateObject.getMinutes()
+
+  var humanDateFormat =
+    hours + ':' + minutes.substring(-2) && hours > 12
+      ? hours - 12 + ':' + minutes.substring(-2) + ' PM'
+      : hours + ':' + minutes.substring(-2) + ' AM'
+
+  return humanDateFormat
+}
+
 export default function Weather({
-  sunset,
-  weatherData,
   longitude,
   latitude,
+  description,
+  temp,
+  feels_like,
+  speed,
+  deg,
   sunrise,
+  sunset,
+  icon,
+  temp_min,
+  temp_max,
+  country,
+  name,
   units,
 }) {
   return (
     <>
-      <p> Sunrise: {sunrise}</p>
-      <p>Sunset: {sunset} </p>
-
+      <h1>
+        {name},{country}
+      </h1>
+      <p> Sunrise: {unixToTime(sunrise)}</p>
+      <p>Sunset: {unixToTime(sunset)} </p>
       <p>
-        Temperature: {weatherData.temp} {units}
+        Temp:{Math.round(temp)} {units}
       </p>
       <p>
-        Feels Like: {weatherData.feels_like} {units}
+        Feels Like:{Math.round(feels_like)}
+        {units}
       </p>
+      <p>
+        Max Temp:{Math.round(temp_max)}
+        {units}
+      </p>
+      <p>
+        Min Temp:{Math.round(temp_min)}
+        {units}
+      </p>
+      <p>Wind Speed:{speed}km/h</p>
+      <p>Wind Direction:{deg}</p>
       <p>Longitude: {longitude}</p>
       <p>Latitude: {latitude}</p>
+      <img src={makeIconUrl(icon)} alt="weather icon" />
+      <p>{description}</p>
     </>
   )
 }
