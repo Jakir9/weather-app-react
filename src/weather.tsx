@@ -1,9 +1,27 @@
 import React from 'react'
 
-const makeIconUrl = (iconId) =>
+interface WeatherProps {
+  longitude: number
+  latitude: number
+  description: string
+  temp: number
+  feels_like: number
+  speed: number
+  deg: number
+  sunrise: number
+  sunset: number
+  icon: string
+  temp_min: number
+  temp_max: number
+  country: string
+  name: string
+  units: string
+}
+
+const makeIconUrl = (iconId: string) =>
   `https://openweathermap.org/img/wn/${iconId}@2x.png`
 
-const unixToTime = (unixTime) => {
+const unixToTime = (unixTime: number) => {
   const dateObject = new Date(unixTime * 1000)
   var hours = dateObject.getHours()
   var minutes = '0' + dateObject.getMinutes()
@@ -15,8 +33,7 @@ const unixToTime = (unixTime) => {
 
   return humanDateFormat
 }
-
-export default function Weather({
+const Weather: React.FC<WeatherProps> = ({
   longitude,
   latitude,
   description,
@@ -32,7 +49,7 @@ export default function Weather({
   country,
   name,
   units,
-}) {
+}) => {
   return (
     <>
       <h1>
