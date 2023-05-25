@@ -8,19 +8,22 @@ function App(): JSX.Element {
   const [longitude, setLongitude] = useState<number>(0)
   const [latitude, setLatitude] = useState<number>(0)
 
-  interface WeatherData {
-    description: string
+  interface WeatherProps {
+    longitude: number
+    latitude: number
+    units: string
+    speed: number
+    deg: number
     temp: number
     feels_like: number
-    speed: number
-    pressure: number
-    humidity: number
-    deg: number
-    icon: string
     temp_min: number
     temp_max: number
     country: string
     name: string
+    icon: string
+    humidity: number // Add the humidity property
+    pressure: number
+    description: string
     sunrise: number
     sunset: number
   }
