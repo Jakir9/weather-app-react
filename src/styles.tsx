@@ -1,14 +1,12 @@
 import styled from 'styled-components'
 
-const Title = styled.h1`
+const Title = styled.h2`
   font-family: 'Montserrat', Arial;
+  font-style: italic;
   color: #fff;
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   text-align: center;
-  background-color: #333;
   max-width: 50%;
-  margin: 1rem auto;
-  padding: 0.4rem;
   border-radius: 1%;
 `
 
@@ -17,26 +15,23 @@ const MainContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  max-width: 80%;
+  max-width: 100%;
   margin: 0 auto;
   padding: 1rem;
-  border-radius: 4%;
-  border: 1px solid #333;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 `
 
-const WeatherWrapper = styled.p`
+const WeatherWrapper = styled.div`
   font-family: 'Montserrat', Arial;
-  color: #333;
   font-size: 1rem;
   text-align: center;
-  background-color: #fff;
-  max-width: 40%;
+  background-color: #8b78e6;
+  color: #fff;
+  max-width: 100%;
+  width: 20%;
   margin: 1rem auto;
   padding: 1rem;
-  border-radius: 5%;
-  border: 1px solid #333;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 `
 
 export { Title, MainContainer, WeatherWrapper }

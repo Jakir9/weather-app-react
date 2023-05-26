@@ -3,14 +3,20 @@ import { Title, WeatherWrapper, MainContainer } from './styles.tsx'
 import { Weather } from './weather.tsx'
 import Search from './search.tsx'
 import axios from 'axios'
+import './App.css'
 
 function App(): JSX.Element {
-  const [longitude, setLongitude] = useState<number>(0)
-  const [latitude, setLatitude] = useState<number>(0)
+  // Store longitude and latitude in state
+  const [longitude, setLongitude] = useState(0)
+  const [latitude, setLatitude] = useState(0)
 
+  let mockApi = 'http://localhost:3000/weather'
+
+  // Define the shape of weather data object
   type WeatherDataProps = {
     longitude: number
     latitude: number
+    dt: number
     units: string
     speed: number
     deg: number
@@ -28,11 +34,13 @@ function App(): JSX.Element {
     sunset: number
   }
 
+  // Store weather data in state
   const [weatherData, setWeatherData] = useState<WeatherDataProps | null>(null)
 
   const units = 'metric'
   const apiKey = process.env.REACT_APP_API_KEY
 
+  // Define unit conversions for temperature and speed
   const convertUnits = {
     metric: {
       temp: 'C',
@@ -44,25 +52,29 @@ function App(): JSX.Element {
     },
   }
 
+  // Fetch weather data using longitude and latitude
   const fetchWeatherByLonLat = async (): Promise<void> => {
-    let url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=${units}`
-
+    //let url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=${units}`
+    let url = mockApi
     try {
       const response = await axios.get(url)
 
       if (response.status === 200) {
         const data = response.data
 
+        // Extract necessary weather data from the response
         const {
           weather,
           main: { temp, feels_like, temp_min, temp_max, pressure, humidity },
           wind: { speed, deg },
           sys: { country, sunrise, sunset },
           name,
+          dt,
         } = data
 
         const { description, icon } = weather[0]
 
+        // Update the weather data state
         setWeatherData({
           description,
           temp,
@@ -81,6 +93,7 @@ function App(): JSX.Element {
           longitude,
           latitude,
           units,
+          dt,
         })
 
         console.log('Weather data fetched')
@@ -92,6 +105,7 @@ function App(): JSX.Element {
     }
   }
 
+  // Get the current coordinates of the device
   const getCurrentCoordinates = async (): Promise<void> => {
     try {
       const coordinates = await new Promise<void>((resolve, reject) => {
@@ -111,8 +125,11 @@ function App(): JSX.Element {
           reject(new Error('Geolocation is not supported by this browser.'))
         }
       })
+
       console.log('Latitude:', latitude)
       console.log('Longitude:', longitude)
+
+      // Fetch weather data using the obtained coordinates
       fetchWeatherByLonLat()
     } catch (error_1) {
       console.log('Error:', error_1)
@@ -120,49 +137,45 @@ function App(): JSX.Element {
   }
 
   useEffect(() => {
+    // Get the current coordinates when the component mounts
     getCurrentCoordinates()
-    // if any changes occur it gets weather again
-  }, [])
-
-  getCurrentCoordinates()
+    // Re-fetch weather data when there are changes in weatherData
+  }, [weatherData])
 
   return (
-    <div
-      style={{
-        backgroundImage: `url('https://source.unsplash.com/random/?${weatherData?.name}')`,
-      }}
-    >
+    <div>
       <MainContainer>
         <Title>Weather App</Title>
         <WeatherWrapper>
-          {/* Have weather here */}
-
+          {/* Render weather component if weather data is available */}
           {weatherData && (
             <Weather
-              longitude={longitude}
-              latitude={latitude}
               units={convertUnits[units].temp}
-              speed={weatherData.speed}
-              deg={weatherData.deg}
+              description={weatherData.description}
               temp={weatherData.temp}
-              feels_like={weatherData.feels_like}
-              temp_min={weatherData.temp_min}
-              temp_max={weatherData.temp_max}
               country={weatherData.country}
               name={weatherData.name}
               icon={weatherData.icon}
               humidity={weatherData.humidity}
               pressure={weatherData.pressure}
-              description={weatherData.description}
               sunrise={Math.round(weatherData.sunrise)}
               sunset={Math.round(weatherData.sunset)}
+              longitude={longitude}
+              latitude={latitude}
+              speed={weatherData.speed}
+              deg={weatherData.deg}
+              feels_like={weatherData.feels_like}
+              temp_min={weatherData.temp_min}
+              temp_max={weatherData.temp_max}
+              dt={weatherData.dt}
             />
           )}
+          {/* Render loading message if weather data is not available */}
+          {!weatherData && <p>Loading...</p>}
         </WeatherWrapper>
 
         <button onClick={getCurrentCoordinates}>Refresh🔄</button>
-        {/* <Search /> */}
-        <Search />
+        <Search setWeatherData={setWeatherData} />
       </MainContainer>
     </div>
   )

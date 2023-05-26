@@ -1,23 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 interface WeatherProps {
   longitude: number
   latitude: number
   description: string
   temp: number
-  feels_like: number
+  feels_like?: number
   speed: number
   deg: number
   sunrise: number
   sunset: number
   icon: string
-  temp_min: number
-  temp_max: number
+  temp_min?: number
+  temp_max?: number
   country: string
   name: string
   units: string
   humidity: number
   pressure: number
+  dt: number
 }
 
 const makeIconUrl = (iconId: string) =>
@@ -25,16 +26,17 @@ const makeIconUrl = (iconId: string) =>
 
 const unixToTime = (unixTime: number) => {
   const dateObject = new Date(unixTime * 1000)
-  var hours = dateObject.getHours()
-  var minutes = '0' + dateObject.getMinutes()
+  const hours = dateObject.getHours()
+  const minutes = ('0' + dateObject.getMinutes()).slice(-2)
 
-  var humanDateFormat =
-    hours + ':' + minutes.substring(-2) && hours > 12
-      ? hours - 12 + ':' + minutes.substring(-2) + ' PM'
-      : hours + ':' + minutes.substring(-2) + ' AM'
+  const humanDateFormat =
+    hours > 12
+      ? hours - 12 + ':' + minutes + ' PM'
+      : hours + ':' + minutes + ' AM'
 
   return humanDateFormat
 }
+
 const Weather: React.FC<WeatherProps> = ({
   longitude,
   latitude,
@@ -51,35 +53,77 @@ const Weather: React.FC<WeatherProps> = ({
   country,
   name,
   units,
+  humidity,
+  pressure,
+  dt,
 }) => {
+  const [showDetails, setShowDetails] = useState(false)
+
+  const toggleDetails = () => {
+    setShowDetails((prevShowDetails) => !prevShowDetails)
+  }
+
   return (
     <>
       <p>
         {name}, {country}
       </p>
-      <p> Sunrise: {unixToTime(sunrise)}</p>
-      <p>Sunset: {unixToTime(sunset)} </p>
-      <p>
-        Temp:{Math.round(temp)} {units}
-      </p>
-      <p>
-        Feels Like:{Math.round(feels_like)}
-        {units}
-      </p>
-      <p>
-        Max Temp:{Math.round(temp_max)}
-        {units}
-      </p>
-      <p>
-        Min Temp:{Math.round(temp_min)}
-        {units}
-      </p>
-      <p>Wind Speed:{speed}km/h</p>
-      <p>Wind Direction:{deg}</p>
-      <p>Longitude: {longitude}</p>
-      <p>Latitude: {latitude}</p>
+
       <img src={makeIconUrl(icon)} alt="weather icon" />
-      <p>{description}</p>
+
+      <div
+        className="weatherMainStats"
+        style={{
+          alignItems: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <p style={{ marginRight: '0.8rem' }}>
+            Temp: {Math.round(temp)}°{units}
+          </p>
+          <p style={{ marginLeft: '0.8rem' }}>Humidity: {humidity}%</p>
+        </div>
+
+        <p>{description}</p>
+      </div>
+      <p>
+        Last updated: {unixToTime(dt)} {new Date().toLocaleDateString()}
+      </p>
+      {showDetails && (
+        <>
+          {feels_like && (
+            <p>
+              Feels Like: {Math.round(feels_like)}
+              {units}
+            </p>
+          )}
+          {temp_min && (
+            <p>
+              Min Temp: {Math.round(temp_min)}
+              {units}
+            </p>
+          )}
+          {temp_max && (
+            <p>
+              Max Temp: {Math.round(temp_max)}
+              {units}
+            </p>
+          )}
+          <p>Wind Speed: {speed} km/h</p>
+          <p>Wind Direction: {deg}</p>
+          <p>Longitude: {longitude}</p>
+          <p>Latitude: {latitude}</p>
+          <p>Pressure: {pressure} hPa</p>
+          <p>Sunrise: {unixToTime(sunrise)}</p>
+          <p>Sunset: {unixToTime(sunset)}</p>
+        </>
+      )}
+      <button onClick={toggleDetails}>
+        {showDetails ? 'Less Details' : 'More Details'}
+      </button>
     </>
   )
 }
