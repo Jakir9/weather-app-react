@@ -54,9 +54,9 @@ const Weather: React.FC<WeatherProps> = ({
 }) => {
   return (
     <>
-      <h1>
-        {name},{country}
-      </h1>
+      <p>
+        {name}, {country}
+      </p>
       <p> Sunrise: {unixToTime(sunrise)}</p>
       <p>Sunset: {unixToTime(sunset)} </p>
       <p>

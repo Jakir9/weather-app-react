@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Title, WeatherWrapper, MainContainer } from './styles.tsx'
 import { Weather } from './weather.tsx'
+import Search from './search.tsx'
 import axios from 'axios'
 
 function App(): JSX.Element {
@@ -30,7 +31,7 @@ function App(): JSX.Element {
   const [weatherData, setWeatherData] = useState<WeatherDataProps | null>(null)
 
   const units = 'metric'
-  const apiKey = 'null'
+  const apiKey = process.env.REACT_APP_API_KEY
 
   const convertUnits = {
     metric: {
@@ -43,7 +44,7 @@ function App(): JSX.Element {
     },
   }
 
-  const fetchWeather = async (): Promise<void> => {
+  const fetchWeatherByLonLat = async (): Promise<void> => {
     let url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=${units}`
 
     try {
@@ -91,71 +92,121 @@ function App(): JSX.Element {
     }
   }
 
-  const getCurrentCoordinates = (): Promise<void> => {
-    return new Promise<void>((resolve, reject) => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords
-            setLatitude(latitude)
-            setLongitude(longitude)
-            resolve()
-          },
-          (error) => {
-            reject(error)
-          }
-        )
-      } else {
-        reject(new Error('Geolocation is not supported by this browser.'))
-      }
-    })
-      .then((coordinates) => {
-        console.log('Latitude:', latitude)
-        console.log('Longitude:', longitude)
-        fetchWeather()
+  const getCurrentCoordinates = async (): Promise<void> => {
+    try {
+      const coordinates = await new Promise<void>((resolve, reject) => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords
+              setLatitude(latitude)
+              setLongitude(longitude)
+              resolve()
+            },
+            (error) => {
+              reject(error)
+            }
+          )
+        } else {
+          reject(new Error('Geolocation is not supported by this browser.'))
+        }
       })
-      .catch((error) => {
-        console.log('Error:', error)
-        // Handle the error appropriately
-      })
+      console.log('Latitude:', latitude)
+      console.log('Longitude:', longitude)
+      fetchWeatherByLonLat()
+    } catch (error_1) {
+      console.log('Error:', error_1)
+    }
   }
 
-  // useEffect(() => {
-  //   getCurrentCoordinates()
-  //   // if any changes occur it gets weather again
-  // }, [longitude, latitude])
+  useEffect(() => {
+    getCurrentCoordinates()
+    // if any changes occur it gets weather again
+  }, [])
 
-  console.log('Weather data:', weatherData)
+  function handleClick(e: any) {
+    let searchLocation = e.target.value
+    fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${searchLocation}&appid=${apiKey}&units=${units}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          const {
+            weather,
+            main: { temp, feels_like, temp_min, temp_max, pressure, humidity },
+            wind: { speed, deg },
+            sys: { country, sunrise, sunset },
+            name,
+          } = data
 
+          const { description, icon } = weather[0]
+
+          setWeatherData({
+            description,
+            temp,
+            feels_like,
+            speed,
+            pressure,
+            humidity,
+            deg,
+            icon,
+            temp_min,
+            temp_max,
+            country,
+            name,
+            sunrise,
+            sunset,
+            longitude,
+            latitude,
+            units,
+          })
+        }
+      })
+  }
   return (
-    <MainContainer>
-      <Title>Weather App</Title>
-      <WeatherWrapper>
-        {/* Have weather here */}
+    <div
+      style={{
+        backgroundImage: `url('https://source.unsplash.com/random/?cities')`,
+      }}
+    >
+      <MainContainer>
+        <Title>Weather App</Title>
+        <WeatherWrapper>
+          {/* Have weather here */}
 
-        {weatherData && (
-          <Weather
-            longitude={longitude}
-            latitude={latitude}
-            units={convertUnits[units].temp}
-            speed={weatherData.speed}
-            deg={weatherData.deg}
-            temp={weatherData.temp}
-            feels_like={weatherData.feels_like}
-            temp_min={weatherData.temp_min}
-            temp_max={weatherData.temp_max}
-            country={weatherData.country}
-            name={weatherData.name}
-            icon={weatherData.icon}
-            humidity={weatherData.humidity}
-            pressure={weatherData.pressure}
-            description={weatherData.description}
-            sunrise={weatherData.sunrise}
-            sunset={weatherData.sunset}
-          />
-        )}
-      </WeatherWrapper>
-    </MainContainer>
+          {weatherData && (
+            <Weather
+              longitude={longitude}
+              latitude={latitude}
+              units={convertUnits[units].temp}
+              speed={weatherData.speed}
+              deg={weatherData.deg}
+              temp={weatherData.temp}
+              feels_like={weatherData.feels_like}
+              temp_min={weatherData.temp_min}
+              temp_max={weatherData.temp_max}
+              country={weatherData.country}
+              name={weatherData.name}
+              icon={weatherData.icon}
+              humidity={weatherData.humidity}
+              pressure={weatherData.pressure}
+              description={weatherData.description}
+              sunrise={Math.round(weatherData.sunrise)}
+              sunset={Math.round(weatherData.sunset)}
+            />
+          )}
+        </WeatherWrapper>
+
+        <button onClick={getCurrentCoordinates}>🔄</button>
+        {/* <Search /> */}
+        <input type="text" placeholder="Search" />
+        <button value="Search" onClick={handleClick}>
+          Search
+        </button>
+      </MainContainer>
+    </div>
   )
 }
+
 export default App

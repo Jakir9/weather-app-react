@@ -13,9 +13,6 @@ const Title = styled.h1`
 `
 
 const MainContainer = styled.div`
-  background-image: url('https://source.unsplash.com/random/?cities');
-  background-size: cover;
-  background-position: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
