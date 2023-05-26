@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { Title, WeatherWrapper, MainContainer } from './styles.tsx'
 import { Weather } from './weather.tsx'
 import axios from 'axios'
-//import dotenv from 'dotenv'
 
 function App(): JSX.Element {
   const [longitude, setLongitude] = useState<number>(0)
   const [latitude, setLatitude] = useState<number>(0)
 
-  interface WeatherProps {
+  type WeatherDataProps = {
     longitude: number
     latitude: number
     units: string
@@ -21,22 +20,17 @@ function App(): JSX.Element {
     country: string
     name: string
     icon: string
-    humidity: number // Add the humidity property
+    humidity: number
     pressure: number
     description: string
     sunrise: number
     sunset: number
   }
 
-  const [weatherData, setWeatherData] = useState<WeatherData>({} as WeatherData)
+  const [weatherData, setWeatherData] = useState<WeatherDataProps | null>(null)
 
-  // const [weatherData, setWeatherData] = useState({})
-
-  const units = 'metric' //can be changed to imperial if need be - maybe add functionality to toggle units
+  const units = 'metric'
   const apiKey = 'null'
-
-  //make an enum for units
-  //type units = 'metric' | 'imperial'
 
   const convertUnits = {
     metric: {
@@ -83,6 +77,9 @@ function App(): JSX.Element {
           name,
           sunrise,
           sunset,
+          longitude,
+          latitude,
+          units,
         })
 
         console.log('Weather data fetched')
@@ -123,10 +120,10 @@ function App(): JSX.Element {
       })
   }
 
-  useEffect(() => {
-    getCurrentCoordinates()
-    // if any changes occur it gets weather again
-  }, [longitude, latitude])
+  // useEffect(() => {
+  //   getCurrentCoordinates()
+  //   // if any changes occur it gets weather again
+  // }, [longitude, latitude])
 
   console.log('Weather data:', weatherData)
 
@@ -135,25 +132,28 @@ function App(): JSX.Element {
       <Title>Weather App</Title>
       <WeatherWrapper>
         {/* Have weather here */}
-        <Weather
-          longitude={longitude}
-          latitude={latitude}
-          units={convertUnits[units].temp}
-          speed={weatherData.speed}
-          deg={weatherData.deg}
-          temp={weatherData.temp}
-          feels_like={weatherData.feels_like}
-          temp_min={weatherData.temp_min}
-          temp_max={weatherData.temp_max}
-          country={weatherData.country}
-          name={weatherData.name}
-          icon={weatherData.icon}
-          humidity={weatherData.humidity}
-          pressure={weatherData.pressure}
-          description={weatherData.description}
-          sunrise={weatherData.sunrise}
-          sunset={weatherData.sunset}
-        />
+
+        {weatherData && (
+          <Weather
+            longitude={longitude}
+            latitude={latitude}
+            units={convertUnits[units].temp}
+            speed={weatherData.speed}
+            deg={weatherData.deg}
+            temp={weatherData.temp}
+            feels_like={weatherData.feels_like}
+            temp_min={weatherData.temp_min}
+            temp_max={weatherData.temp_max}
+            country={weatherData.country}
+            name={weatherData.name}
+            icon={weatherData.icon}
+            humidity={weatherData.humidity}
+            pressure={weatherData.pressure}
+            description={weatherData.description}
+            sunrise={weatherData.sunrise}
+            sunset={weatherData.sunset}
+          />
+        )}
       </WeatherWrapper>
     </MainContainer>
   )

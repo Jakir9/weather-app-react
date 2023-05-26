@@ -16,6 +16,8 @@ interface WeatherProps {
   country: string
   name: string
   units: string
+  humidity: number
+  pressure: number
 }
 
 const makeIconUrl = (iconId: string) =>
