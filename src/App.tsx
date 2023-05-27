@@ -65,11 +65,11 @@ function App(): JSX.Element {
         // Extract necessary weather data from the response
         const {
           weather,
+          dt,
           main: { temp, feels_like, temp_min, temp_max, pressure, humidity },
           wind: { speed, deg },
           sys: { country, sunrise, sunset },
           name,
-          dt,
         } = data
 
         const { description, icon } = weather[0]

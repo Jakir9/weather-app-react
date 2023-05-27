@@ -89,9 +89,7 @@ const Weather: React.FC<WeatherProps> = ({
 
         <p>{description}</p>
       </div>
-      <p>
-        Last updated: {unixToTime(dt)} {new Date().toLocaleDateString()}
-      </p>
+      <p>Last updated: {new Date(dt * 1000).toLocaleString('en-GB')}</p>
       {showDetails && (
         <>
           {feels_like && (
@@ -117,8 +115,8 @@ const Weather: React.FC<WeatherProps> = ({
           <p>Longitude: {longitude}</p>
           <p>Latitude: {latitude}</p>
           <p>Pressure: {pressure} hPa</p>
-          <p>Sunrise: {unixToTime(sunrise)}</p>
-          <p>Sunset: {unixToTime(sunset)}</p>
+          <p>Sunrise: {new Date(sunrise * 1000).toLocaleTimeString('en-GB')}</p>
+          <p>Sunset: {new Date(sunset * 1000).toLocaleTimeString('en-GB')}</p>
         </>
       )}
       <button onClick={toggleDetails}>

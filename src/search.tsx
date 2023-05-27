@@ -115,7 +115,17 @@ function Search({ setWeatherData }: SearchProps) {
         style={{ margin: '0.5rem' }}
       />
       <button onClick={handleClick}>Search</button>
-      {error && <p>{error}</p>}
+      {error && (
+        <p
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            textAlign: 'center',
+          }}
+        >
+          {error}
+        </p>
+      )}
     </div>
   )
 }
