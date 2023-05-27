@@ -46,8 +46,8 @@ function Search({ setWeatherData }: SearchProps) {
 
     // Fetch weather data from the API
     fetch(
-      //   `https://api.openweathermap.org/data/2.5/weather?q=${searchLocation}&appid=${apiKey}&units=${units}`
-      `http://localhost:3000/weather`
+      `https://api.openweathermap.org/data/2.5/weather?q=${searchLocation}&appid=${apiKey}&units=${units}`
+      // `http://localhost:3000/weather`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -91,7 +91,7 @@ function Search({ setWeatherData }: SearchProps) {
           // Clear the error message
           setError('')
           //clear the search box
-          setSearchLocation('')
+          // setSearchLocation('')
         } else {
           // Display the error message from the API response
           setError(data.message)

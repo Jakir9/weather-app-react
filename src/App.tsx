@@ -10,7 +10,7 @@ function App(): JSX.Element {
   const [longitude, setLongitude] = useState(0)
   const [latitude, setLatitude] = useState(0)
 
-  let mockApi = 'http://localhost:3000/weather'
+  //let mockApi = 'http://localhost:3000/weather'
 
   // Define the shape of weather data object
   type WeatherDataProps = {
@@ -39,6 +39,7 @@ function App(): JSX.Element {
 
   const units = 'metric'
   const apiKey = process.env.REACT_APP_API_KEY
+  console.log(apiKey)
 
   // Define unit conversions for temperature and speed
   const convertUnits = {
@@ -54,13 +55,13 @@ function App(): JSX.Element {
 
   // Fetch weather data using longitude and latitude
   const fetchWeatherByLonLat = async (): Promise<void> => {
-    //let url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=${units}`
-    let url = mockApi
+    let url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=${units}`
+    // let url = mockApi
     try {
       const response = await axios.get(url)
 
       if (response.status === 200) {
-        const data = response.data
+        const data = await response.data
 
         // Extract necessary weather data from the response
         const {
@@ -108,7 +109,7 @@ function App(): JSX.Element {
   // Get the current coordinates of the device
   const getCurrentCoordinates = async (): Promise<void> => {
     try {
-      const coordinates = await new Promise<void>((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -140,7 +141,7 @@ function App(): JSX.Element {
     // Get the current coordinates when the component mounts
     getCurrentCoordinates()
     // Re-fetch weather data when there are changes in weatherData
-  }, [weatherData])
+  }, [])
 
   return (
     <div>
