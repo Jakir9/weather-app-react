@@ -27,8 +27,8 @@ function Search({ setWeatherData }: SearchProps) {
   }
 
   // State variables
-  const [searchLocation, setSearchLocation] = useState('')
-  const [error, setError] = useState('')
+  const [searchLocation, setSearchLocation] = useState<string>('')
+  const [error, setError] = useState<string>('')
 
   // Constants
   const units = 'metric'
@@ -40,6 +40,7 @@ function Search({ setWeatherData }: SearchProps) {
     if (searchLocation.trim() === '') {
       setError('Please enter a location')
       setWeatherData(null)
+      //clear the search box
       return
     }
 
@@ -89,6 +90,8 @@ function Search({ setWeatherData }: SearchProps) {
 
           // Clear the error message
           setError('')
+          //clear the search box
+          setSearchLocation('')
         } else {
           // Display the error message from the API response
           setError(data.message)
@@ -109,6 +112,7 @@ function Search({ setWeatherData }: SearchProps) {
         placeholder="Search"
         value={searchLocation}
         onChange={(e) => setSearchLocation(e.target.value)}
+        style={{ margin: '0.5rem' }}
       />
       <button onClick={handleClick}>Search</button>
       {error && <p>{error}</p>}
