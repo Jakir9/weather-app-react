@@ -65,11 +65,11 @@ function App(): JSX.Element {
         // Extract necessary weather data from the response
         const {
           weather,
+          dt,
           main: { temp, feels_like, temp_min, temp_max, pressure, humidity },
           wind: { speed, deg },
           sys: { country, sunrise, sunset },
           name,
-          dt,
         } = data
 
         const { description, icon } = weather[0]
@@ -145,7 +145,8 @@ function App(): JSX.Element {
   return (
     <div>
       <MainContainer>
-        <Title>Weather App</Title>
+        <Title>Todays Forecast</Title>
+        <Search setWeatherData={setWeatherData} />
         <WeatherWrapper>
           {/* Render weather component if weather data is available */}
           {weatherData && (
@@ -175,7 +176,6 @@ function App(): JSX.Element {
         </WeatherWrapper>
 
         <button onClick={getCurrentCoordinates}>Refresh🔄</button>
-        <Search setWeatherData={setWeatherData} />
       </MainContainer>
     </div>
   )
