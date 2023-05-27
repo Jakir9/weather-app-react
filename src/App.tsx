@@ -176,7 +176,7 @@ function App(): JSX.Element {
           {!weatherData && <p>Loading...</p>}
         </WeatherWrapper>
 
-        <button onClick={getCurrentCoordinates}>Refresh🔄</button>
+        <button onClick={getCurrentCoordinates}>Current Location 🔄</button>
       </MainContainer>
     </div>
   )
